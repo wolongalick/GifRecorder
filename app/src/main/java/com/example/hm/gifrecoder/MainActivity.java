@@ -1,6 +1,7 @@
 package com.example.hm.gifrecoder;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -63,6 +64,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void showNotification() {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        String channelId = "111";
+        NotificationChannel channel = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            channel = new NotificationChannel(channelId, "record", NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
+        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -70,14 +79,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 99, intent, PendingIntent
             .FLAG_ONE_SHOT);
         Notification notification = builder
+            .setChannel(channelId)
             .setContentTitle("正在录屏...")
             .setContentText("点击可结束录屏")
             .setWhen(System.currentTimeMillis())
             .setSmallIcon(R.mipmap.ic_launcher)
+            .setDefaults(Notification.DEFAULT_ALL)
             .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
             .setContentIntent(pendingIntent)
             .build();
-        notification.flags = Notification.FLAG_AUTO_CANCEL;
+//        notification.flags = Notification.FLAG_AUTO_CANCEL;
+
+
+
         manager.notify(1, notification);
     }
 }
